@@ -4,7 +4,7 @@
     
     <groupId>org.bluemoondev</groupId>
     <artifactId>SimpleSQL</artifactId>
-    <version>v1.0.4b-SNAPSHOT</version>
+    <version>v1.0.5b-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>SimpleSQL</name>

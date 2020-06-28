@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.teivodov.simplesql.test;
+package org.bluemoondev.simplesql.test;
 
 import org.bluemoondev.simplesql.SQLTable;
 import org.bluemoondev.simplesql.columns.BoolColumn;
