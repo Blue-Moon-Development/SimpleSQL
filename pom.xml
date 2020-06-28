@@ -25,17 +25,6 @@
             <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
         </license>
     </licenses>
-
-    <distributionManagement>
-        <repository>
-            <id></id>
-            <url></url>
-        </repository>
-        <snapshotRepository>
-            <id></id>
-            <url></url>
-        </snapshotRepository>
-    </distributionManagement>
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
