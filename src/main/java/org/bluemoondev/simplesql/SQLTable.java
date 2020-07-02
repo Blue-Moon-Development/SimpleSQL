@@ -582,7 +582,8 @@ public abstract class SQLTable {
 	 * @throws SSQLException 
 	 */
 	public List<Long> getLongs(String keyName, Object key, String name) throws SSQLException {
-		String query = select(name, keyName);
+		//TODO Need to follow example of getLong. Use column set function
+		String query = select(columns.get(keyName).set(), name);
 		Injector injector = new Injector();
 		injector.put(1, key);
 		List<Long> longs = new ArrayList<>();
@@ -604,7 +605,7 @@ public abstract class SQLTable {
 	 * @throws SSQLException 
 	 */
 	public List<Integer> getInts(String keyName, Object key, String name) throws SSQLException {
-		String query = select(name, keyName);
+		String query = select(columns.get(keyName).set(), name);
 		Injector injector = new Injector();
 		injector.put(1, key);
 		List<Integer> ints = new ArrayList<>();
@@ -626,7 +627,7 @@ public abstract class SQLTable {
 	 * @throws SSQLException 
 	 */
 	public List<String> getStrings(String keyName, Object key, String name) throws SSQLException {
-		String query = select(name, keyName);
+		String query = select(columns.get(keyName).set(), name);
 		Injector injector = new Injector();
 		injector.put(1, key);
 		List<String> strs = new ArrayList<>();
@@ -648,7 +649,7 @@ public abstract class SQLTable {
 	 * @throws SSQLException 
 	 */
 	public List<Boolean> getBools(String keyName, Object key, String name) throws SSQLException {
-		String query = select(name, keyName);
+		String query = select(columns.get(keyName).set(), name);
 		Injector injector = new Injector();
 		injector.put(1, key);
 		List<Boolean> bools = new ArrayList<>();
