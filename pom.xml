@@ -1,93 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    
-    <groupId>org.bluemoondev</groupId>
-    <artifactId>SimpleSQL</artifactId>
-    <!-- pre release beta -->
-    <version>v.1.0.7b-SNAPSHOT</version>
-    <packaging>jar</packaging>
-    
-    <name>SimpleSQL</name>
-    <inceptionYear>2019</inceptionYear>
-    <!--- TODO: Create SimpleSQL -Page- -->
-    
-    <developers>
-        <developer>
-            <id>TigerCipher</id>
-            <name>Matt</name>
-            <email>matt@bluemoondev.org</email>
-        </developer>
-    </developers>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <licenses>
-        <license>
-            <name>GNU GENERAL PUBLIC LICENSE VERSION 3</name>
-            <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
-        </license>
-    </licenses>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    
-    <build>
-        <defaultGoal>clean install</defaultGoal>
-        <finalName>${project.name}</finalName>
-        <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
-    
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Built-By>Matt</Built-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
-    <dependencies>
-        
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.17</version>
-        </dependency>
-                
-        <!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.28.0</version>
-        </dependency>
-    </dependencies>
-    
-    <repositories>
-        <repository>
-            <id>jcenter</id>
-            <name>jcenter-bintray</name>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
-        <repository>
-            <id>jcenter-snapshot</id>
-            <url>https://oss.jfrog.org/artifactory/libs-release/</url>
-        </repository>
-    </repositories>
-        
+	<groupId>org.bluemoondev</groupId>
+	<artifactId>SimpleSQL</artifactId>
+	<!-- pre release beta -->
+	<version>v.1.0.7b-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>SimpleSQL</name>
+	<inceptionYear>2019</inceptionYear>
+	<!--- TODO: Create SimpleSQL -Page- -->
+
+	<developers>
+		<developer>
+			<id>TigerCipher</id>
+			<name>Matt</name>
+			<email>matt@bluemoondev.org</email>
+		</developer>
+	</developers>
+
+	<licenses>
+		<license>
+			<name>GNU GENERAL PUBLIC LICENSE VERSION 3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<build>
+		<defaultGoal>clean install</defaultGoal>
+		<finalName>${project.name}</finalName>
+		<sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Built-By>Matt</Built-By>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.17</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.28.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.bluemoondev.blutilities</groupId>
+			<artifactId>blutilities4j</artifactId>
+			<version>0.0.0.3</version>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>jcenter</id>
+			<name>jcenter-bintray</name>
+			<url>https://jcenter.bintray.com</url>
+		</repository>
+		<repository>
+			<id>jcenter-snapshot</id>
+			<url>https://oss.jfrog.org/artifactory/libs-release/</url>
+		</repository>
+	</repositories>
+
 </project>

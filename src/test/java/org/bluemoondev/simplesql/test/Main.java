@@ -13,9 +13,7 @@
  */
 package org.bluemoondev.simplesql.test;
 
-import java.io.File;
-
-import org.bluemoondev.simplesql.SQLite;
+import org.bluemoondev.simplesql.MySql;
 import org.bluemoondev.simplesql.SimpleSQL;
 
 /**
@@ -32,9 +30,8 @@ public class Main {
 	public static final TestTable TEST = new TestTable();
 
 	public static void main(String[] args) {
-		SimpleSQL.init(new SQLite(new File("./database.db")));
-		// SimpleSQL.init(new MySql("host", "user", "password", "databaseName", 3306,
-		// MySql.CST));
+//		SimpleSQL.init(new SQLite(new File("./database.db")));
+		 SimpleSQL.init(new MySql("***REMOVED***", "***REMOVED***", "***REMOVED***", "ssqltest", 3306, MySql.EST));
 
 		TEST.setAge("John", "Smith", 18);
 		TEST.setAge("Matt", "Smith", 21);
@@ -44,6 +41,7 @@ public class Main {
 		TEST.setPassing("Sara", "Bananas", true);
 
 		TEST.setGrade("Matt", "Smith", "Senior");
+		TEST.setGrade("Sara", "Bananas", "Junior");
 
 		System.out.println(	"John, age: "	+ TEST.getAge("John", "Smith") + ", passing: "
 							+ TEST.getPassing("John", "Smith"));
@@ -54,6 +52,9 @@ public class Main {
 		System.out.println("Matt grade: " + TEST.getGrade("Matt", "Smith"));
 		System.out.println("Sara grade: " + TEST.getGrade("Sara", "Bananas")); // Outputs that her grade is null, since
 																				 // no default value was specified
+		
+		System.out.println("Sara grade: " + TEST.getGrade1("Sara", "Bananas"));
+		System.err.println(TEST.FIRSTNAME.getTypeClass());
 
 	}
 

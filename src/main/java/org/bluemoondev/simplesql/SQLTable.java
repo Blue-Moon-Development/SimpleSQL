@@ -17,6 +17,7 @@ import java.lang.reflect.Field;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,10 +83,10 @@ public abstract class SQLTable {
 	 * not exist in the table, it will be inserted. Use this method when you
 	 * know the primary key.
 	 *
-	 * @param keyValue The key value where the table will be updated
-	 * @param name     The name of the column to update
-	 * @param newValue The new value for that column
-	 * @throws SSQLException 
+	 * @param  keyValue      The key value where the table will be updated
+	 * @param  name          The name of the column to update
+	 * @param  newValue      The new value for that column
+	 * @throws SSQLException
 	 */
 	public void update(Object keyValue, String name, Object newValue) throws SSQLException {
 		if (!Checks.isValidObject(keyValue)) throw new SSQLException("The keyValue is an invalid type");
@@ -105,12 +106,13 @@ public abstract class SQLTable {
 	 * when you don't know the primary key but instead know what a few other
 	 * values are that would be unique to the row
 	 *
-	 * @param name     The name of the column to update
-	 * @param newValue The new value for that column
-	 * @param data     An array of {@link org.bluemoondev.simplesql.utils.DataSet
-	 *                 DataSets} containing the column key-value
-	 *                 pairs
-	 * @throws SSQLException 
+	 * @param  name          The name of the column to update
+	 * @param  newValue      The new value for that column
+	 * @param  data          An array of
+	 *                       {@link org.bluemoondev.simplesql.utils.DataSet
+	 *                       DataSets} containing the column key-value
+	 *                       pairs
+	 * @throws SSQLException
 	 */
 	public void update(String name, Object newValue, DataSet... data) throws SSQLException {
 		if (!Checks.isValidObject(newValue)) throw new SSQLException("The newValue is an invalid type");
@@ -182,7 +184,7 @@ public abstract class SQLTable {
 	 *
 	 * @throws java.sql.SQLException If the table failed to create due to an SQL
 	 *                               error
-	 * @throws SSQLException 
+	 * @throws SSQLException
 	 */
 	public void create() throws SQLException, SSQLException {
 
@@ -253,18 +255,19 @@ public abstract class SQLTable {
 	}
 
 	private String select(String where, String columns) {
-		return "SELECT " + columns + " FROM " + tableName + (where == null	? ""
-																			: " WHERE " + where)
+		return "SELECT "	+ columns + " FROM " + tableName + (where == null	? ""
+																				: " WHERE " + where)
 				+ ";";
 	}
 
 	/**
 	 * Checks if the table contains this key and value
 	 *
-	 * @param key   The key to check
-	 * @param value The value to check
-	 * @return True if a row exists with this key and value. False otherwise
-	 * @throws SSQLException 
+	 * @param  key           The key to check
+	 * @param  value         The value to check
+	 * @return               True if a row exists with this key and value. False
+	 *                       otherwise
+	 * @throws SSQLException
 	 */
 	public boolean exists(String key, Object value) throws SSQLException {
 		if (!Checks.isValidObject(value)) throw new SSQLException("The value is an invalid type");
@@ -279,9 +282,10 @@ public abstract class SQLTable {
 	/**
 	 * Checks if the table contains these keys and values
 	 *
-	 * @param data An array of key-value pairs to check
-	 * @return True if a row exists with these keys and values. False otherwise
-	 * @throws SSQLException 
+	 * @param  data          An array of key-value pairs to check
+	 * @return               True if a row exists with these keys and values. False
+	 *                       otherwise
+	 * @throws SSQLException
 	 */
 	public boolean exists(DataSet... data) throws SSQLException {
 
@@ -298,8 +302,9 @@ public abstract class SQLTable {
 			injector.put(i + 1, data[i].value);
 		}
 		String query = selectAll(wheres);
-
 		return readSupply(query, injector, results -> {
+			for (DataSet d : data) { System.out.print(d.name + "  " + d.value.toString() + ", "); }
+			System.out.println(query + "    -    " + results.next());
 			return results.next();
 		});
 	}
@@ -307,9 +312,9 @@ public abstract class SQLTable {
 	/**
 	 * Resets the row with the given key and column name to the default value
 	 *
-	 * @param key     The key from where the data will be reset
-	 * @param toReset The name of the column to reset
-	 * @throws SSQLException 
+	 * @param  key           The key from where the data will be reset
+	 * @param  toReset       The name of the column to reset
+	 * @throws SSQLException
 	 */
 	public void reset(Object key, String toReset) throws SSQLException {
 		update(key, toReset, columns.get(toReset).defaultValue);
@@ -318,9 +323,9 @@ public abstract class SQLTable {
 	/**
 	 * Resets the row with the given key and column name to the default value
 	 *
-	 * @param toReset The column to reset
-	 * @param data    The key-value pairs to reset
-	 * @throws SSQLException 
+	 * @param  toReset       The column to reset
+	 * @param  data          The key-value pairs to reset
+	 * @throws SSQLException
 	 */
 	public void reset(String toReset, DataSet... data) throws SSQLException {
 		update(toReset, columns.get(toReset).defaultValue, data);
@@ -329,8 +334,8 @@ public abstract class SQLTable {
 	/**
 	 * Deletes a row at the specified location
 	 *
-	 * @param key The key of the row to delete
-	 * @throws SSQLException 
+	 * @param  key           The key of the row to delete
+	 * @throws SSQLException
 	 */
 	public void delete(Object key) throws SSQLException {
 		if (!Checks.isValidObject(key)) throw new SSQLException("The key is an invalid type");
@@ -343,8 +348,8 @@ public abstract class SQLTable {
 	/**
 	 * Deletes a row where the specified keys and values can be found
 	 *
-	 * @param data The key-value pairs to delete
-	 * @throws SSQLException 
+	 * @param  data          The key-value pairs to delete
+	 * @throws SSQLException
 	 */
 	public void delete(DataSet... data) throws SSQLException {
 		if (data.length == 1) {
@@ -371,373 +376,424 @@ public abstract class SQLTable {
 	 * Retrieves the long from the specified column where the list of keys and
 	 * values can be found
 	 *
-	 * @param name The name of the <code>LongColumn</code> to retrieve data from
-	 * @param data An array of the key-value pairs to use as locators
-	 * @return The long stored at this location
-	 * @throws SSQLException 
+	 * @param  <T>           The type of value to return
+	 * @param  name          The name of the column to retrieve
+	 *                       data from
+	 * @param  dataSets      An array of the key-value pairs to use as locators
+	 * @return               The T stored at this location
+	 * @throws SSQLException If no
+	 *                       {@link org.bluemoondev.simplesql.columns.SQLColumn
+	 *                       SQLColumn} has
+	 *                       been created with that name, or if the dataSets array
+	 *                       is null or empty
 	 */
-	public long getLong(String name, DataSet... data) throws SSQLException {
-		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
-		if (data == null) throw new SSQLException("The DataSet array must not be null");
-		if (data.length == 0) throw new SSQLException("The DataSet array must not be empty");
-		if (data.length == 1) return getLong(data[0].value, name);
+	public <T> T getValue(String name, DataSet... dataSets) throws SSQLException {
+		if (!checks(name, dataSets)) return null;
+		if (dataSets.length == 1) return getValue(dataSets[0].value, name);
+		String strs[] = new String[dataSets.length];
 
-		if (!exists(data))
-			return 0L;
-
-		String strs[] = new String[data.length];
-
-		Injector injector = new Injector();
-
-		for (int i = 0; i < strs.length; i++) {
-			strs[i] = columns.get(data[i].name).set();
-			injector.put(i + 1, data[i].value);
-		}
+		Injector injector = getInjector((i, s) -> {
+			strs[i] = s;
+		}, dataSets);
 
 		String query = select(columns.get(name), strs);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getLong(name);
+
+		Class<?> clazz = columns.get(name).getTypeClass();
+		return (T) readSupply(query, injector, results -> {
+			if (results.next()) {
+				try {
+					return results.getObject(name, clazz);
+				} catch (SQLFeatureNotSupportedException ex) {
+					return getValueFallback(clazz, results, name);
+				}
+			}
 			return null;
 		});
+	}
 
+	/**
+	 * Retrieves the long from the specified column where the list of keys and
+	 * values can be found
+	 *
+	 * @param  name          The name of the <code>LongColumn</code> to retrieve
+	 *                       data from
+	 * @param  data          An array of the key-value pairs to use as locators
+	 * @return               The long stored at this location
+	 * @throws SSQLException If no
+	 *                       {@link org.bluemoondev.simplesql.columns.LongColumn
+	 *                       LongColumn} has
+	 *                       been created with that name, or if the dataSets array
+	 *                       is null or empty
+	 */
+	public long getLong(String name, DataSet... data) throws SSQLException {
+		return getValue(name, data);
 	}
 
 	/**
 	 * Retrieves the int from the specified column where the list of keys and
 	 * values can be found
 	 *
-	 * @param name The name of the <code>IntColumn</code> to retrieve data from
-	 * @param data An array of the key-value pairs to use as locators
-	 * @return The int stored at this location
-	 * @throws SSQLException 
+	 * @param  name          The name of the <code>IntColumn</code> to retrieve data
+	 *                       from
+	 * @param  data          An array of the key-value pairs to use as locators
+	 * @return               The int stored at this location
+	 * @throws SSQLException If no
+	 *                       {@link org.bluemoondev.simplesql.columns.IntColumn
+	 *                       IntColumn} has
+	 *                       been created with that name, or if the dataSets array
+	 *                       is null or empty
 	 */
 	public int getInt(String name, DataSet... data) throws SSQLException {
-		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
-		if (data == null) throw new SSQLException("The DataSet array must not be null");
-		if (data.length == 0) throw new SSQLException("The DataSet array must not be empty");
-		if (data.length == 1) return getInt(data[0].value, name);
-
-		if (!exists(data))
-			return 0;
-
-		String strs[] = new String[data.length];
-
-		Injector injector = new Injector();
-
-		for (int i = 0; i < strs.length; i++) {
-			strs[i] = columns.get(data[i].name).set();
-			injector.put(i + 1, data[i].value);
-		}
-
-		String query = select(columns.get(name), strs);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getInt(name);
-			return null;
-		});
+		return getValue(name, data);
 	}
 
 	/**
 	 * Retrieves the String from the specified column where the list of keys and
 	 * values can be found
 	 *
-	 * @param name The name of the <code>StringColumn</code> to retrieve data
-	 *             from
-	 * @param data An array of key-value pairs to use as locators
-	 * @return The String stored at this location
-	 * @throws SSQLException 
+	 * @param  name          The name of the <code>StringColumn</code> to retrieve
+	 *                       data
+	 *                       from
+	 * @param  data          An array of key-value pairs to use as locators
+	 * @return               The String stored at this location
+	 * @throws SSQLException If no
+	 *                       {@link org.bluemoondev.simplesql.columns.StringColumn
+	 *                       StringColumn} has
+	 *                       been created with that name, or if the dataSets array
+	 *                       is null or empty
 	 */
 	public String getString(String name, DataSet... data) throws SSQLException {
-		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
-		if (data == null) throw new SSQLException("The DataSet array must not be null");
-		if (data.length == 0) throw new SSQLException("The DataSet array must not be empty");
-		if (data.length == 1) return getString(data[0].value, name);
-
-		if (!exists(data))
-			return null;
-
-		String strs[] = new String[data.length];
-		Injector injector = new Injector();
-
-		for (int i = 0; i < strs.length; i++) {
-			strs[i] = columns.get(data[i].name).set();
-			injector.put(i + 1, data[i].value);
-		}
-
-		String query = select(columns.get(name), strs);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getString(name);
-			return null;
-		});
+		return getValue(name, data);
 	}
 
 	/**
 	 * Retrieves the boolean from the specified column where the list of keys
 	 * and values can be found
 	 *
-	 * @param name The name of the <code>BoolColumn</code> to retrieve data from
-	 * @param data An array of key-value pairs to use as locators
-	 * @return The boolean stored at this location
-	 * @throws SSQLException 
+	 * @param  name          The name of the <code>BoolColumn</code> to retrieve
+	 *                       data from
+	 * @param  data          An array of key-value pairs to use as locators
+	 * @return               The boolean stored at this location
+	 * @throws SSQLException If no
+	 *                       {@link org.bluemoondev.simplesql.columns.BoolColumn
+	 *                       BoolColumn} has
+	 *                       been created with that name, or if the dataSets array
+	 *                       is null or empty
 	 */
 	public boolean getBool(String name, DataSet... data) throws SSQLException {
-		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
-		if (data == null) throw new SSQLException("The DataSet array must not be null");
-		if (data.length == 0) throw new SSQLException("The DataSet array must not be empty");
-		if (data.length == 1) return getBool(data[0].value, name);
-
-		if (!exists(data))
-			return false;
-
-		String strs[] = new String[data.length];
-		Injector injector = new Injector();
-
-		for (int i = 0; i < strs.length; i++) {
-			strs[i] = columns.get(data[i].name).set();
-			injector.put(i + 1, data[i].value);
-		}
-
-		String query = select(columns.get(name), strs);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getBoolean(name);
-			return null;
-		});
+		return getValue(name, data);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row for the specified column
 	 *
-	 * @param name The column to retrieve the data from
-	 * @return A list of the long values
-	 * @throws SSQLException 
+	 * @param  <T>           The type of value for the column
+	 * @param  name          The column to retrieve the data from
+	 * @return               A list of the values
+	 * @throws SSQLException If no such
+	 *                       {@link org.bluemoondev.simplesql.columns.SQLColumn
+	 *                       SQLColumn} of type T has been added to the table
+	 */
+	public <T> List<T> getValues(String name) throws SSQLException {
+		String query = selectAllFor(name);
+		List<T> values = new ArrayList<>();
+		Class<T> clazz = columns.get(name).getTypeClass();
+		read(query, results -> {
+			while (results.next()) {
+				try {
+					values.add(results.getObject(name, clazz));
+				} catch (SQLFeatureNotSupportedException ex) {
+					values.add(getValueFallback(clazz, results, name));
+				}
+			}
+		});
+
+		return values;
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the specified column
+	 *
+	 * @param  name          The column to retrieve the data from
+	 * @return               A list of the long values
+	 * @throws SSQLException If no such
+	 *                       {@link org.bluemoondev.simplesql.columns.LongColumn
+	 *                       LongColumn} has been added to the table
 	 */
 	public List<Long> getLongs(String name) throws SSQLException {
-		String query = selectAllFor(name);
-		List<Long> longs = new ArrayList<>();
-		read(query, results -> {
-			while (results.next()) { longs.add(results.getLong(name)); }
-		});
-		return longs;
+		return getValues(name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row for the specified column
 	 *
-	 * @param name The column to retrieve the data from
-	 * @return A list of the int values
-	 * @throws SSQLException 
+	 * @param  name          The column to retrieve the data from
+	 * @return               A list of the int values
+	 * @throws SSQLException If no such
+	 *                       {@link org.bluemoondev.simplesql.columns.IntColumn
+	 *                       IntColumn} has been added to the table
 	 */
 	public List<Integer> getInts(String name) throws SSQLException {
-		String query = selectAllFor(name);
-		List<Integer> ints = new ArrayList<>();
-		read(query, results -> {
-			while (results.next()) { ints.add(results.getInt(name)); }
-		});
-		return ints;
+		return getValues(name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row for the specified column
 	 *
-	 * @param name The column to retrieve the data from
-	 * @return A list of the String values
-	 * @throws SSQLException 
+	 * @param  name          The column to retrieve the data from
+	 * @return               A list of the String values
+	 * @throws SSQLException If no such
+	 *                       {@link org.bluemoondev.simplesql.columns.StringColumn
+	 *                       StringColumn} has been added to the table
 	 */
 	public List<String> getStrings(String name) throws SSQLException {
-		String query = selectAllFor(name);
-		List<String> strs = new ArrayList<>();
-		read(query, results -> {
-			while (results.next()) { strs.add(results.getString(name)); }
-		});
-		return strs;
+		return getValues(name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row for the specified column
 	 *
-	 * @param name The column to retrieve the data from
-	 * @return A list of the boolean values
-	 * @throws SSQLException 
+	 * @param  name          The column to retrieve the data from
+	 * @return               A list of the boolean values
+	 * @throws SSQLException If no such
+	 *                       {@link org.bluemoondev.simplesql.columns.BoolColumn
+	 *                       BoolColumn} has been added to the table
 	 */
 	public List<Boolean> getBools(String name) throws SSQLException {
-		String query = selectAllFor(name);
-		List<Boolean> bools = new ArrayList<>();
-		read(query, results -> {
-			while (results.next()) { bools.add(results.getBoolean(name)); }
-		});
-		return bools;
+		return getValues(name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row with the given key column name
 	 * and value for the specified column
 	 *
-	 * @param keyName The name of the column to use as the key
-	 * @param key     The value at the key column
-	 * @param name    The name of the column to grab values from
-	 * @return A list of the long values
-	 * @throws SSQLException 
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the long values
+	 * @throws SSQLException
 	 */
 	public List<Long> getLongs(String keyName, Object key, String name) throws SSQLException {
-		//TODO Need to follow example of getLong. Use column set function
+		return getValues(keyName, key, name);
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
+	 *
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the long values
+	 * @throws SSQLException
+	 */
+	public List<Long> getLongs(String name, DataSet... keys) throws SSQLException {
+		return getValues(name, keys);
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
+	 *
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the long values
+	 * @throws SSQLException
+	 */
+	public List<Integer> getInts(String name, DataSet... keys) throws SSQLException {
+		return getValues(name, keys);
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
+	 *
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the long values
+	 * @throws SSQLException
+	 */
+	public List<String> getStrings(String name, DataSet... keys) throws SSQLException {
+		return getValues(name, keys);
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
+	 *
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the long values
+	 * @throws SSQLException
+	 */
+	public List<Boolean> getBools(String name, DataSet... keys) throws SSQLException {
+		return getValues(name, keys);
+	}
+
+	/**
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
+	 *
+	 * @param  <T>           The type of value to return, must be supported my SQL
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the values of type T
+	 * @throws SSQLException
+	 */
+	public <T> List<T> getValues(String name, DataSet... dataSets) throws SSQLException {
+		if (!checks(name, dataSets)) return null;
+		String strs[] = new String[dataSets.length];
+
+		Injector injector = getInjector((i, s) -> {
+			strs[i] = s;
+		}, dataSets);
+
+		String query = select(columns.get(name), strs);
+		List<T> values = new ArrayList<>();
+		Class<?> clazz = columns.get(name).getTypeClass();
+		readConsume(query, injector, results -> {
+			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
+		});
+		return values;
+	}
+
+	/**
+	 * Retrieves a list of all values for the given column at every row with the
+	 * given key column name and value for the specified column
+	 * 
+	 * @param  <T>           The type of value to return, must be supported by SQL
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the values of type T
+	 * @throws SSQLException
+	 */
+	public <T> List<T> getValues(String keyName, Object key, String name) throws SSQLException {
 		String query = select(columns.get(keyName).set(), name);
 		Injector injector = new Injector();
 		injector.put(1, key);
-		List<Long> longs = new ArrayList<>();
+		List<T> values = new ArrayList<>();
+		Class<?> clazz = columns.get(name).getTypeClass();
 		readConsume(query, injector, results -> {
-			while (results.next()) { longs.add(results.getLong(name)); }
+			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
 		});
-
-		return longs;
+		return values;
 	}
 
 	/**
 	 * Retrieves a list of all values at every row with the given key column name
 	 * and value for the specified column
 	 *
-	 * @param keyName The name of the column to use as the key
-	 * @param key     The value at the key column
-	 * @param name    The name of the column to grab values from
-	 * @return A list of the int values
-	 * @throws SSQLException 
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the int values
+	 * @throws SSQLException
 	 */
 	public List<Integer> getInts(String keyName, Object key, String name) throws SSQLException {
-		String query = select(columns.get(keyName).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, key);
-		List<Integer> ints = new ArrayList<>();
-		readConsume(query, injector, results -> {
-			while (results.next()) { ints.add(results.getInt(name)); }
-		});
-
-		return ints;
+		return getValues(keyName, key, name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row with the given key column name
 	 * and value for the specified column
 	 *
-	 * @param keyName The name of the column to use as the key
-	 * @param key     The value at the key column
-	 * @param name    The name of the column to grab values from
-	 * @return A list of the String values
-	 * @throws SSQLException 
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the String values
+	 * @throws SSQLException
 	 */
 	public List<String> getStrings(String keyName, Object key, String name) throws SSQLException {
-		String query = select(columns.get(keyName).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, key);
-		List<String> strs = new ArrayList<>();
-		readConsume(query, injector, results -> {
-			while (results.next()) { strs.add(results.getString(name)); }
-		});
-
-		return strs;
+		return getValues(keyName, key, name);
 	}
 
 	/**
 	 * Retrieves a list of all values at every row with the given key column name
 	 * and value for the specified column
 	 *
-	 * @param keyName The name of the column to use as the key
-	 * @param key     The value at the key column
-	 * @param name    The name of the column to grab values from
-	 * @return A list of the boolean values
-	 * @throws SSQLException 
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the boolean values
+	 * @throws SSQLException
 	 */
 	public List<Boolean> getBools(String keyName, Object key, String name) throws SSQLException {
-		String query = select(columns.get(keyName).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, key);
-		List<Boolean> bools = new ArrayList<>();
-		readConsume(query, injector, results -> {
-			while (results.next()) { bools.add(results.getBoolean(name)); }
-		});
+		return getValues(keyName, key, name);
+	}
 
-		return bools;
+	// TODO: Test this
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 * 
+	 * @param  <T>           The type to return, must be supported by SQL
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The long value at this location
+	 * @throws SSQLException
+	 */
+	public <T> T getValue(Object keyValue, String name) throws SSQLException {
+		String query = select(columns.get(primaryKey).set(), name);
+		Injector injector = new Injector();
+		injector.put(1, keyValue);
+		Class<?> clazz = columns.get(name).getTypeClass();
+		return (T) readSupply(query, injector, results -> {
+			if (results.next())
+				return results.getObject(name, clazz);
+			return null;
+		});
 	}
 
 	/**
 	 * Retrieves the value from the specified column at the row where the
 	 * primary key value can be found
 	 *
-	 * @param keyValue The primary key value of the row to look for
-	 * @param name     The name of the column to get data from
-	 * @return The long value at this location
-	 * @throws SSQLException 
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The long value at this location
+	 * @throws SSQLException
 	 */
 	public long getLong(Object keyValue, String name) throws SSQLException {
-		String query = select(columns.get(primaryKey).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, keyValue);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getLong(name);
-			return null;
-		});
+		return getValue(keyValue, name);
 	}
 
 	/**
 	 * Retrieves the value from the specified column at the row where the
 	 * primary key value can be found
 	 *
-	 * @param keyValue The primary key value of the row to look for
-	 * @param name     The name of the column to get data from
-	 * @return The int value at this location
-	 * @throws SSQLException 
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The int value at this location
+	 * @throws SSQLException
 	 */
 	public int getInt(Object keyValue, String name) throws SSQLException {
-		String query = select(columns.get(primaryKey).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, keyValue);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getInt(name);
-			return null;
-		});
+		return getValue(keyValue, name);
 	}
 
 	/**
 	 * Retrieves the value from the specified column at the row where the
 	 * primary key value can be found
 	 *
-	 * @param keyValue The primary key value of the row to look for
-	 * @param name     The name of the column to get data from
-	 * @return The String value at this location
-	 * @throws SSQLException 
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The String value at this location
+	 * @throws SSQLException
 	 */
 	public String getString(Object keyValue, String name) throws SSQLException {
-		String query = select(columns.get(primaryKey).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, keyValue);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getString(name);
-			return null;
-		});
+		return getValue(keyValue, name);
 	}
 
 	/**
 	 * Retrieves the value from the specified column at the row where the
 	 * primary key value can be found
 	 *
-	 * @param keyValue The primary key value of the row to look for
-	 * @param name     The name of the column to get data from
-	 * @return The boolean value at this location
-	 * @throws SSQLException 
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The boolean value at this location
+	 * @throws SSQLException
 	 */
 	public boolean getBool(Object keyValue, String name) throws SSQLException {
-		String query = select(columns.get(primaryKey).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, keyValue);
-		return readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getBoolean(name);
-			return null;
-		});
+		return getValue(keyValue, name);
 	}
 
 	private void read(String query, ResultsConsumer consumer) throws SSQLException {
@@ -778,6 +834,7 @@ public abstract class SQLTable {
 
 			return re;
 		} catch (SQLException ex) {
+			// TODO Probably best to throw SQLException and let client code handle logging
 			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
 		}
 
@@ -806,12 +863,46 @@ public abstract class SQLTable {
 		}
 	}
 
+	private Injector getInjector(InjectorConsumer consumer, DataSet... dataSets) {
+		Injector injector = new Injector();
+
+		for (int i = 0; i < dataSets.length; i++) {
+			consumer.consume(i, columns.get(dataSets[i].name).set());
+			injector.put(i + 1, dataSets[i].value);
+		}
+
+		return injector;
+	}
+
+	//TODO make more checks
+	private boolean checks(String name, DataSet... dataSets) throws SSQLException {
+		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
+		if (dataSets == null) throw new SSQLException("The DataSet array must not be null");
+		if (dataSets.length == 0) throw new SSQLException("The DataSet array must not be empty");
+
+		return exists(dataSets);
+	}
+
+	private <T> T getValueFallback(Class<T> clazz, ResultSet results, String name) throws SQLException {
+		if (clazz.equals(String.class)) return (T) results.getString(name);
+		if (clazz.equals(Long.class)) return (T) (Long) results.getLong(name);
+		if (clazz.equals(Integer.class)) return (T) (Integer) results.getInt(name);
+		if (clazz.equals(Boolean.class)) return (T) (Boolean) results.getBoolean(name);
+		// TODO add more
+		return null;
+	}
+
 	/**
 	 * Gets the name of this table
 	 *
 	 * @return The tableName
 	 */
 	public String getName() { return tableName; }
+
+	@FunctionalInterface
+	private interface InjectorConsumer {
+		public void consume(int index, String s);
+	}
 
 	/**
 	 * The functional interface to get called when no return value is needed
