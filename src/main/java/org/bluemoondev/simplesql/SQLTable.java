@@ -42,9 +42,10 @@ import org.bluemoondev.simplesql.utils.TableManager;
  */
 public abstract class SQLTable {
 
-	protected final String				tableName;
-	protected Map<String, SQLColumn<?>>	columns;
-	protected String					primaryKey;
+	protected final String	tableName;
+	protected String		primaryKey;
+
+	protected Map<String, SQLColumn<?>> columns;
 
 	/**
 	 * Constructs an instance of <code>SQLTable</code>
@@ -484,6 +485,81 @@ public abstract class SQLTable {
 		return getValue(name, data);
 	}
 
+	// TODO: Test this
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 * 
+	 * @param  <T>           The type to return, must be supported by SQL
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The long value at this location
+	 * @throws SSQLException
+	 */
+	public <T> T getValue(Object keyValue, String name) throws SSQLException {
+		String query = select(columns.get(primaryKey).set(), name);
+		Injector injector = new Injector();
+		injector.put(1, keyValue);
+		Class<?> clazz = columns.get(name).getTypeClass();
+		return (T) readSupply(query, injector, results -> {
+			if (results.next())
+				return results.getObject(name, clazz);
+			return null;
+		});
+	}
+
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 *
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The long value at this location
+	 * @throws SSQLException
+	 */
+	public long getLong(Object keyValue, String name) throws SSQLException {
+		return getValue(keyValue, name);
+	}
+
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 *
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The int value at this location
+	 * @throws SSQLException
+	 */
+	public int getInt(Object keyValue, String name) throws SSQLException {
+		return getValue(keyValue, name);
+	}
+
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 *
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The String value at this location
+	 * @throws SSQLException
+	 */
+	public String getString(Object keyValue, String name) throws SSQLException {
+		return getValue(keyValue, name);
+	}
+
+	/**
+	 * Retrieves the value from the specified column at the row where the
+	 * primary key value can be found
+	 *
+	 * @param  keyValue      The primary key value of the row to look for
+	 * @param  name          The name of the column to get data from
+	 * @return               The boolean value at this location
+	 * @throws SSQLException
+	 */
+	public boolean getBool(Object keyValue, String name) throws SSQLException {
+		return getValue(keyValue, name);
+	}
+
 	/**
 	 * Retrieves a list of all values at every row for the specified column
 	 *
@@ -564,17 +640,30 @@ public abstract class SQLTable {
 	}
 
 	/**
-	 * Retrieves a list of all values at every row with the given key column name
-	 * and value for the specified column
+	 * Retrieves a list of all values at every row for the supplied column name with
+	 * the given data set key-value pairs
 	 *
-	 * @param  keyName       The name of the column to use as the key
-	 * @param  key           The value at the key column
-	 * @param  name          The name of the column to grab values from
-	 * @return               A list of the long values
+	 * @param  <T>           The type of value to return, must be supported my SQL
+	 * @param  name          The name of the column of values to retrieve
+	 * @param  keys          An array of key-value pairs to use as locators
+	 * @return               A list of the values of type T
 	 * @throws SSQLException
 	 */
-	public List<Long> getLongs(String keyName, Object key, String name) throws SSQLException {
-		return getValues(keyName, key, name);
+	public <T> List<T> getValues(String name, DataSet... dataSets) throws SSQLException {
+		if (!checks(name, dataSets)) return null;
+		String strs[] = new String[dataSets.length];
+	
+		Injector injector = getInjector((i, s) -> {
+			strs[i] = s;
+		}, dataSets);
+	
+		String query = select(columns.get(name), strs);
+		List<T> values = new ArrayList<>();
+		Class<?> clazz = columns.get(name).getTypeClass();
+		readConsume(query, injector, results -> {
+			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
+		});
+		return values;
 	}
 
 	/**
@@ -630,33 +719,6 @@ public abstract class SQLTable {
 	}
 
 	/**
-	 * Retrieves a list of all values at every row for the supplied column name with
-	 * the given data set key-value pairs
-	 *
-	 * @param  <T>           The type of value to return, must be supported my SQL
-	 * @param  name          The name of the column of values to retrieve
-	 * @param  keys          An array of key-value pairs to use as locators
-	 * @return               A list of the values of type T
-	 * @throws SSQLException
-	 */
-	public <T> List<T> getValues(String name, DataSet... dataSets) throws SSQLException {
-		if (!checks(name, dataSets)) return null;
-		String strs[] = new String[dataSets.length];
-
-		Injector injector = getInjector((i, s) -> {
-			strs[i] = s;
-		}, dataSets);
-
-		String query = select(columns.get(name), strs);
-		List<T> values = new ArrayList<>();
-		Class<?> clazz = columns.get(name).getTypeClass();
-		readConsume(query, injector, results -> {
-			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
-		});
-		return values;
-	}
-
-	/**
 	 * Retrieves a list of all values for the given column at every row with the
 	 * given key column name and value for the specified column
 	 * 
@@ -677,6 +739,20 @@ public abstract class SQLTable {
 			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
 		});
 		return values;
+	}
+
+	/**
+	 * Retrieves a list of all values at every row with the given key column name
+	 * and value for the specified column
+	 *
+	 * @param  keyName       The name of the column to use as the key
+	 * @param  key           The value at the key column
+	 * @param  name          The name of the column to grab values from
+	 * @return               A list of the long values
+	 * @throws SSQLException
+	 */
+	public List<Long> getLongs(String keyName, Object key, String name) throws SSQLException {
+		return getValues(keyName, key, name);
 	}
 
 	/**
@@ -719,81 +795,6 @@ public abstract class SQLTable {
 	 */
 	public List<Boolean> getBools(String keyName, Object key, String name) throws SSQLException {
 		return getValues(keyName, key, name);
-	}
-
-	// TODO: Test this
-	/**
-	 * Retrieves the value from the specified column at the row where the
-	 * primary key value can be found
-	 * 
-	 * @param  <T>           The type to return, must be supported by SQL
-	 * @param  keyValue      The primary key value of the row to look for
-	 * @param  name          The name of the column to get data from
-	 * @return               The long value at this location
-	 * @throws SSQLException
-	 */
-	public <T> T getValue(Object keyValue, String name) throws SSQLException {
-		String query = select(columns.get(primaryKey).set(), name);
-		Injector injector = new Injector();
-		injector.put(1, keyValue);
-		Class<?> clazz = columns.get(name).getTypeClass();
-		return (T) readSupply(query, injector, results -> {
-			if (results.next())
-				return results.getObject(name, clazz);
-			return null;
-		});
-	}
-
-	/**
-	 * Retrieves the value from the specified column at the row where the
-	 * primary key value can be found
-	 *
-	 * @param  keyValue      The primary key value of the row to look for
-	 * @param  name          The name of the column to get data from
-	 * @return               The long value at this location
-	 * @throws SSQLException
-	 */
-	public long getLong(Object keyValue, String name) throws SSQLException {
-		return getValue(keyValue, name);
-	}
-
-	/**
-	 * Retrieves the value from the specified column at the row where the
-	 * primary key value can be found
-	 *
-	 * @param  keyValue      The primary key value of the row to look for
-	 * @param  name          The name of the column to get data from
-	 * @return               The int value at this location
-	 * @throws SSQLException
-	 */
-	public int getInt(Object keyValue, String name) throws SSQLException {
-		return getValue(keyValue, name);
-	}
-
-	/**
-	 * Retrieves the value from the specified column at the row where the
-	 * primary key value can be found
-	 *
-	 * @param  keyValue      The primary key value of the row to look for
-	 * @param  name          The name of the column to get data from
-	 * @return               The String value at this location
-	 * @throws SSQLException
-	 */
-	public String getString(Object keyValue, String name) throws SSQLException {
-		return getValue(keyValue, name);
-	}
-
-	/**
-	 * Retrieves the value from the specified column at the row where the
-	 * primary key value can be found
-	 *
-	 * @param  keyValue      The primary key value of the row to look for
-	 * @param  name          The name of the column to get data from
-	 * @return               The boolean value at this location
-	 * @throws SSQLException
-	 */
-	public boolean getBool(Object keyValue, String name) throws SSQLException {
-		return getValue(keyValue, name);
 	}
 
 	private void read(String query, ResultsConsumer consumer) throws SSQLException {
@@ -874,7 +875,7 @@ public abstract class SQLTable {
 		return injector;
 	}
 
-	//TODO make more checks
+	// TODO make more checks
 	private boolean checks(String name, DataSet... dataSets) throws SSQLException {
 		if (!columns.containsKey(name)) throw new SSQLException(name + " is not a valid column name");
 		if (dataSets == null) throw new SSQLException("The DataSet array must not be null");

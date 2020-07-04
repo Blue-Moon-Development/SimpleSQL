@@ -55,7 +55,8 @@ public class TableManager {
 				e.getValue().create();
 			} catch (SQLException | SSQLException ex) {
 				SimpleSQL.getLogger().log(Level.SEVERE, "Failed to create the SQL table: "
-														+ e.getValue().getName(), ex);
+														+ e.getValue().getName(),
+											ex);
 			}
 		});
 	}
@@ -63,8 +64,8 @@ public class TableManager {
 	/**
 	 * Gets the table associated with this name
 	 *
-	 * @param name The name of the table
-	 * @return The SQLTable associated with this name
+	 * @param  name The name of the table
+	 * @return      The SQLTable associated with this name
 	 */
 	public static SQLTable get(String name) {
 		return TABLES.get(name);
