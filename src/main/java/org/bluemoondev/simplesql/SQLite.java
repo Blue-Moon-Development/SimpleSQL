@@ -44,6 +44,7 @@ public class SQLite extends Database {
 
 	@Override
 	public void reactivateConnection() throws SQLException {
+		SimpleSQL.getLogger().info("Connecting to local database file " + file.getAbsolutePath());
 		setConnection(DriverManager.getConnection("jdbc:sqlite://" + file.getAbsolutePath()));
 	}
 

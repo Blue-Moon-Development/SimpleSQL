@@ -62,7 +62,7 @@ public class Injector {
 				else if (o instanceof String) ps.setString(i, (String) o);
 				else if (o instanceof Boolean) ps.setBoolean(i, (Boolean) o);
 			} catch (SQLException ex) {
-				SimpleSQL.getLogger().log(Level.SEVERE, null, ex);
+				SimpleSQL.getLogger().error("Failed to inject data into the prepared sql statement", ex);
 			}
 		}
 	}

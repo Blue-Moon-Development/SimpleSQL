@@ -30,9 +30,10 @@ import org.bluemoondev.simplesql.SimpleSQL;
 public class Main {
 
 	public static final TestTable TEST = new TestTable();
+	public static final TestTableWithKey KEY = new TestTableWithKey();
 
-	public static void main(String[] args) {
-		SimpleSQL.init(new SQLite(new File("./database.db")));
+	public static void testNoKey(String[] args) {
+		
 
 		TEST.setAge("John", "Smith", 18);
 		TEST.setAge("Matt", "Smith", 21);
@@ -57,6 +58,19 @@ public class Main {
 		System.out.println("Sara grade: " + TEST.getGrade1("Sara", "Bananas"));
 		System.err.println(TEST.FIRSTNAME.getTypeClass());
 
+	}
+	
+	
+	public static void testWithKey(String[] args) {
+		KEY.newStudent(1L, "John Smith");
+		KEY.newStudent(2L, null);
+		System.out.println(KEY.getStudentName(1L));
+		System.out.println(KEY.getStudentName(2L));
+	}
+	
+	public static void main(String[] args) {
+		SimpleSQL.init(new SQLite(new File("./database.db")));
+		testWithKey(args);
 	}
 
 }

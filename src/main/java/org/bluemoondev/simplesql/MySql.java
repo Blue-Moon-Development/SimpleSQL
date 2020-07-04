@@ -80,6 +80,7 @@ public class MySql extends Database {
 	public void reactivateConnection() throws SQLException {
 		String dsn = "jdbc:mysql://"	+ host + ":" + port + "/" + name
 						+ "?serverTimezone=" + timezone;
+		SimpleSQL.getLogger().info("Connecting to MySQL database " + name);
 		setConnection(DriverManager.getConnection(dsn, user, password));
 	}
 

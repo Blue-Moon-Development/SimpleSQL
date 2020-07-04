@@ -54,9 +54,7 @@ public class TableManager {
 			try {
 				e.getValue().create();
 			} catch (SQLException | SSQLException ex) {
-				SimpleSQL.getLogger().log(Level.SEVERE, "Failed to create the SQL table: "
-														+ e.getValue().getName(),
-											ex);
+				SimpleSQL.getLogger().error("Failed to create SQL table: " + e.getValue().getName(), ex);
 			}
 		});
 	}

@@ -46,7 +46,7 @@ public abstract class Database {
 			Class<?> driverClass = Class.forName(driver);
 			driverClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-			SimpleSQL.getLogger().log(Level.SEVERE, null, ex);
+			SimpleSQL.getLogger().error(ex.getMessage(), ex);
 		}
 	}
 

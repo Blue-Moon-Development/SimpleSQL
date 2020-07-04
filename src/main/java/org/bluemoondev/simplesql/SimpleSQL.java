@@ -13,7 +13,9 @@
  */
 package org.bluemoondev.simplesql;
 
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.bluemoondev.simplesql.exceptions.SSQLException;
 import org.bluemoondev.simplesql.utils.TableManager;
@@ -29,7 +31,7 @@ import org.bluemoondev.simplesql.utils.TableManager;
  */
 public class SimpleSQL {
 
-	private static Logger logger = Logger.getLogger(SimpleSQL.class.getName());
+	private static Logger logger = LoggerFactory.getLogger("SimpleSQL");
 
 	private static Database database;
 
@@ -41,6 +43,7 @@ public class SimpleSQL {
 	 * @see MySql
 	 */
 	public static void init(Database db) {
+		SimpleSQL.getLogger().info("Initializing SimpleSQL");
 		database = db;
 		TableManager.createTables();
 	}

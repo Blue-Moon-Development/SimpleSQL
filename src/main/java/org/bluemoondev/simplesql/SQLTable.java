@@ -60,7 +60,7 @@ public abstract class SQLTable {
 				try {
 					addColumn((SQLColumn<?>) field.get(null));
 				} catch (IllegalArgumentException | IllegalAccessException ex) {
-					SimpleSQL.getLogger().log(Level.SEVERE, null, ex);
+					SimpleSQL.getLogger().error(ex.getMessage(), ex);
 				}
 
 		}
@@ -275,7 +275,7 @@ public abstract class SQLTable {
 		String query = selectAll(columns.get(key).set());
 		Injector injector = new Injector();
 		injector.put(1, value);
-		return readSupply(query, injector, results -> {
+		return read(query, injector, results -> {
 			return results.next();
 		});
 	}
@@ -303,9 +303,7 @@ public abstract class SQLTable {
 			injector.put(i + 1, data[i].value);
 		}
 		String query = selectAll(wheres);
-		return readSupply(query, injector, results -> {
-			for (DataSet d : data) { System.out.print(d.name + "  " + d.value.toString() + ", "); }
-			System.out.println(query + "    -    " + results.next());
+		return read(query, injector, results -> {
 			return results.next();
 		});
 	}
@@ -400,7 +398,7 @@ public abstract class SQLTable {
 		String query = select(columns.get(name), strs);
 
 		Class<?> clazz = columns.get(name).getTypeClass();
-		return (T) readSupply(query, injector, results -> {
+		return (T) read(query, injector, results -> {
 			if (results.next()) {
 				try {
 					return results.getObject(name, clazz);
@@ -501,9 +499,16 @@ public abstract class SQLTable {
 		Injector injector = new Injector();
 		injector.put(1, keyValue);
 		Class<?> clazz = columns.get(name).getTypeClass();
-		return (T) readSupply(query, injector, results -> {
-			if (results.next())
+		System.out.println(clazz);
+		return (T) read(query, injector, results -> {
+			System.out.println(results != null);
+			if (results.next()) {
+				try {
 				return results.getObject(name, clazz);
+				}catch(SQLFeatureNotSupportedException ex) {
+					return getValueFallback(clazz, results, name);
+				}
+			}
 			return null;
 		});
 	}
@@ -574,7 +579,7 @@ public abstract class SQLTable {
 		String query = selectAllFor(name);
 		List<T> values = new ArrayList<>();
 		Class<T> clazz = columns.get(name).getTypeClass();
-		read(query, results -> {
+		set(query, results -> {
 			while (results.next()) {
 				try {
 					values.add(results.getObject(name, clazz));
@@ -660,7 +665,7 @@ public abstract class SQLTable {
 		String query = select(columns.get(name), strs);
 		List<T> values = new ArrayList<>();
 		Class<?> clazz = columns.get(name).getTypeClass();
-		readConsume(query, injector, results -> {
+		set(query, injector, results -> {
 			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
 		});
 		return values;
@@ -735,7 +740,7 @@ public abstract class SQLTable {
 		injector.put(1, key);
 		List<T> values = new ArrayList<>();
 		Class<?> clazz = columns.get(name).getTypeClass();
-		readConsume(query, injector, results -> {
+		set(query, injector, results -> {
 			while (results.next()) { values.add((T) results.getObject(name, clazz)); }
 		});
 		return values;
@@ -797,33 +802,24 @@ public abstract class SQLTable {
 		return getValues(keyName, key, name);
 	}
 
-	private void read(String query, ResultsConsumer consumer) throws SSQLException {
+	private void set(String query, ResultsConsumer consumer) throws SSQLException {
+		set(query, null, consumer);
+	}
+
+	private void set(String query, Injector injector, ResultsConsumer consumer) throws SSQLException {
 		try {
 			PreparedStatement ps = SimpleSQL.getDatabase().getPreparedStatement(query);
+			if(injector != null) injector.inject(ps);
 			ResultSet results = ps.executeQuery();
 			consumer.consume(results);
 			SimpleSQL.getDatabase().closeResultSet(results);
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
-		}
-
-	}
-
-	private void readConsume(String query, Injector injector, ResultsConsumer consumer) throws SSQLException {
-		try {
-			PreparedStatement ps = SimpleSQL.getDatabase().getPreparedStatement(query);
-			injector.inject(ps);
-			ResultSet results = ps.executeQuery();
-			consumer.consume(results);
-			SimpleSQL.getDatabase().closeResultSet(results);
-			SimpleSQL.getDatabase().closeStatement(ps);
-		} catch (SQLException ex) {
-			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
+			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
 		}
 	}
 
-	private <T> T readSupply(String query, Injector injector, ResultsSupplier<T> supplier) throws SSQLException {
+	private <T> T read(String query, Injector injector, ResultsSupplier<T> supplier) throws SSQLException {
 
 		try {
 			PreparedStatement ps = SimpleSQL.getDatabase().getPreparedStatement(query);
@@ -835,8 +831,7 @@ public abstract class SQLTable {
 
 			return re;
 		} catch (SQLException ex) {
-			// TODO Probably best to throw SQLException and let client code handle logging
-			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
+			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
 		}
 
 		return null;
@@ -849,7 +844,7 @@ public abstract class SQLTable {
 			ps.executeUpdate();
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
+			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
 		}
 
 	}
@@ -860,7 +855,7 @@ public abstract class SQLTable {
 			ps.execute();
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().log(Level.SEVERE, "Failed to execute SQL query: " + query, ex);
+			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
 		}
 	}
 

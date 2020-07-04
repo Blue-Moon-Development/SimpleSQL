@@ -23,15 +23,15 @@ import org.bluemoondev.simplesql.utils.Checks;
  * Represents an abstract column in an SQL table
  * </p>
  *
- * @author <a href = "https://bluemoondev.org"> Matt</a>
- * @param <T> The data type this column stores
+ * @author     <a href = "https://bluemoondev.org"> Matt</a>
+ * @param  <T> The data type this column stores
  */
-public abstract class SQLColumn<T> extends AbstractType<T>{
+public abstract class SQLColumn<T> extends AbstractType<T> {
 
 	public final String		name;
 	public final T			defaultValue;
 	public final boolean	primary;
-	
+
 	private boolean nullable;
 
 	/**
@@ -67,6 +67,17 @@ public abstract class SQLColumn<T> extends AbstractType<T>{
 		this(name, defaultValue, false);
 	}
 
+	/**
+	 * Should this column be allowed to have a null value?
+	 * 
+	 * @param  nullable True if the value is allowed to be null
+	 * @return          this
+	 */
+	public SQLColumn<T> setNullable(boolean nullable) {
+		this.nullable = nullable;
+		return this;
+	}
+
 	protected abstract String getType();
 
 	public String getDescriptor() { return getType() + defaultable() + nullable() + primable(); }
@@ -99,7 +110,7 @@ public abstract class SQLColumn<T> extends AbstractType<T>{
 	public String isGreaterThan(long value) {
 		return name + " > " + value;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;

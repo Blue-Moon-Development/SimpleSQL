@@ -7,7 +7,7 @@
 	<groupId>org.bluemoondev</groupId>
 	<artifactId>SimpleSQL</artifactId>
 	<!-- pre release beta -->
-	<version>v.1.0.7b-SNAPSHOT</version>
+	<version>dev</version>
 	<packaging>jar</packaging>
 
 	<name>SimpleSQL</name>
@@ -60,6 +60,31 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadoc</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
 		</plugins>
 	</build>
 
@@ -83,6 +108,11 @@
 			<groupId>org.bluemoondev.blutilities</groupId>
 			<artifactId>blutilities4j</artifactId>
 			<version>0.0.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.2.3</version>
 		</dependency>
 	</dependencies>
 
