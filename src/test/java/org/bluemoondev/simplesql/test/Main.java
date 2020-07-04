@@ -13,7 +13,9 @@
  */
 package org.bluemoondev.simplesql.test;
 
-import org.bluemoondev.simplesql.MySql;
+import java.io.File;
+
+import org.bluemoondev.simplesql.SQLite;
 import org.bluemoondev.simplesql.SimpleSQL;
 
 /**
@@ -30,8 +32,7 @@ public class Main {
 	public static final TestTable TEST = new TestTable();
 
 	public static void main(String[] args) {
-//		SimpleSQL.init(new SQLite(new File("./database.db")));
-		 SimpleSQL.init(new MySql("149.56.98.229", "root", "alpha7bravo3", "ssqltest", 3306, MySql.EST));
+		SimpleSQL.init(new SQLite(new File("./database.db")));
 
 		TEST.setAge("John", "Smith", 18);
 		TEST.setAge("Matt", "Smith", 21);
