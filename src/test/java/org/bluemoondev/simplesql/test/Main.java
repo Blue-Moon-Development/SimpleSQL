@@ -30,8 +30,7 @@ public class Main {
 	public static final TestTable TEST = new TestTable();
 
 	public static void main(String[] args) {
-//		SimpleSQL.init(new SQLite(new File("./database.db")));
-		 SimpleSQL.init(new MySql("***REMOVED***", "***REMOVED***", "***REMOVED***", "ssqltest", 3306, MySql.EST));
+		SimpleSQL.init(new SQLite(new File("./database.db")));
 
 		TEST.setAge("John", "Smith", 18);
 		TEST.setAge("Matt", "Smith", 21);
