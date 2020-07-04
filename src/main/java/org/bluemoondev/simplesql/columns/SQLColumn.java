@@ -13,6 +13,7 @@
  */
 package org.bluemoondev.simplesql.columns;
 
+import org.bluemoondev.blutilities.generics.AbstractType;
 import org.bluemoondev.simplesql.utils.Checks;
 
 /**
@@ -25,12 +26,12 @@ import org.bluemoondev.simplesql.utils.Checks;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  * @param <T> The data type this column stores
  */
-public abstract class SQLColumn<T> {
+public abstract class SQLColumn<T> extends AbstractType<T>{
 
 	public final String		name;
 	public final T			defaultValue;
 	public final boolean	primary;
-
+	
 	private boolean nullable;
 
 	/**
@@ -98,7 +99,7 @@ public abstract class SQLColumn<T> {
 	public String isGreaterThan(long value) {
 		return name + " > " + value;
 	}
-
+	
 	@Override
 	public String toString() {
 		return name;

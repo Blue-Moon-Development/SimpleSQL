@@ -46,7 +46,7 @@ public class TestTable extends SQLTable {
 
 	public void setGrade(String first, String last, String grade) {
 		try {
-			update(GRADE.name, grade, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			update(GRADE.name, grade, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 		}
@@ -54,17 +54,26 @@ public class TestTable extends SQLTable {
 
 	public String getGrade(String first, String last) {
 		try {
-			return getString(GRADE.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			return getString(GRADE.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 			return null;
 		}
 
 	}
+	
+	public String getGrade1(String first, String last) {
+		try {
+			return getValue(GRADE.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
+		} catch (SSQLException ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 
 	public void setPassing(String first, String last, boolean pass) {
 		try {
-			update(PASSING.name, pass, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			update(PASSING.name, pass, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 		}
@@ -72,7 +81,7 @@ public class TestTable extends SQLTable {
 
 	public void setAge(String first, String last, int age) {
 		try {
-			update(AGE.name, age, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			update(AGE.name, age, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 		}
@@ -80,7 +89,7 @@ public class TestTable extends SQLTable {
 
 	public boolean getPassing(String first, String last) {
 		try {
-			return getBool(PASSING.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			return getBool(PASSING.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 			return false;
@@ -89,7 +98,7 @@ public class TestTable extends SQLTable {
 
 	public int getAge(String first, String last) {
 		try {
-			return getInt(AGE.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, first));
+			return getInt(AGE.name, new DataSet(FIRSTNAME.name, first), new DataSet(LASTNAME.name, last));
 		} catch (SSQLException ex) {
 			ex.printStackTrace();
 			return -1;
