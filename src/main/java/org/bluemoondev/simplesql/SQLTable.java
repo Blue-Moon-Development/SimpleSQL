@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.sqlite.jdbc4.JDBC4ResultSet;
+
 import org.bluemoondev.simplesql.columns.SQLColumn;
 import org.bluemoondev.simplesql.exceptions.SSQLException;
 import org.bluemoondev.simplesql.utils.Checks;
