@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.sqlite.jdbc4.JDBC4ResultSet;
 
 import org.bluemoondev.simplesql.columns.SQLColumn;
@@ -43,6 +44,8 @@ import org.bluemoondev.simplesql.utils.TableManager;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public abstract class SQLTable {
+	
+	private static final Log LOG = Log.get("SimpleSQL", SQLTable.class);
 
 	protected final String	tableName;
 	protected String		primaryKey;
@@ -62,7 +65,7 @@ public abstract class SQLTable {
 				try {
 					addColumn((SQLColumn<?>) field.get(null));
 				} catch (IllegalArgumentException | IllegalAccessException ex) {
-					SimpleSQL.getLogger().error(ex.getMessage(), ex);
+					LOG.error(ex.getMessage(), ex);
 				}
 
 		}
@@ -204,6 +207,7 @@ public abstract class SQLTable {
 						.next()) {
 					sb.append("ALTER TABLE ").append(tableName).append(" ADD ").append(s).append(" ").append(c
 							.getDescriptor());
+					LOG.info("Altering table -> " + sb.toString());
 					writeNew(sb.toString());
 					sb = new StringBuilder();
 					alteration = true;
@@ -231,6 +235,7 @@ public abstract class SQLTable {
 			i++;
 		}
 
+		LOG.info("Creating table -> " + sb.toString());
 		writeNew(sb.toString());
 	}
 
@@ -501,9 +506,9 @@ public abstract class SQLTable {
 		Injector injector = new Injector();
 		injector.put(1, keyValue);
 		Class<?> clazz = columns.get(name).getTypeClass();
-		System.out.println(clazz);
+//		System.out.println(clazz);
 		return (T) read(query, injector, results -> {
-			System.out.println(results != null);
+//			System.out.println(results != null);
 			if (results.next()) {
 				try {
 				return results.getObject(name, clazz);
@@ -652,9 +657,8 @@ public abstract class SQLTable {
 	 *
 	 * @param  <T>           The type of value to return, must be supported my SQL
 	 * @param  name          The name of the column of values to retrieve
-	 * @param  keys          An array of key-value pairs to use as locators
+	 * @param  dataSets          An array of key-value pairs to use as locators
 	 * @return               A list of the values of type T
-	 * @throws SSQLException
 	 */
 	public <T> List<T> getValues(String name, DataSet... dataSets) throws SSQLException {
 		if (!checks(name, dataSets)) return null;
@@ -817,7 +821,7 @@ public abstract class SQLTable {
 			SimpleSQL.getDatabase().closeResultSet(results);
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
+			LOG.error("Failed to execute SQL query: " + query, ex);
 		}
 	}
 
@@ -833,7 +837,7 @@ public abstract class SQLTable {
 
 			return re;
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
+			LOG.error("Failed to execute SQL query: " + query, ex);
 		}
 
 		return null;
@@ -846,7 +850,7 @@ public abstract class SQLTable {
 			ps.executeUpdate();
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
+			LOG.error("Failed to execute SQL query: " + query, ex);
 		}
 
 	}
@@ -857,7 +861,7 @@ public abstract class SQLTable {
 			ps.execute();
 			SimpleSQL.getDatabase().closeStatement(ps);
 		} catch (SQLException ex) {
-			SimpleSQL.getLogger().error("Failed to execute SQL query: " + query, ex);
+			LOG.error("Failed to execute SQL query: " + query, ex);
 		}
 	}
 

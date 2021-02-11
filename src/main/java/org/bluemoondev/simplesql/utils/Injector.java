@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.simplesql.SimpleSQL;
 
 /**
@@ -32,6 +33,8 @@ import org.bluemoondev.simplesql.SimpleSQL;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class Injector {
+
+	private static final Log LOG = Log.get("SimpleSQL", Injector.class);
 
 	private Map<Integer, Object> injections;
 
@@ -62,7 +65,7 @@ public class Injector {
 				else if (o instanceof String) ps.setString(i, (String) o);
 				else if (o instanceof Boolean) ps.setBoolean(i, (Boolean) o);
 			} catch (SQLException ex) {
-				SimpleSQL.getLogger().error("Failed to inject data into the prepared sql statement", ex);
+				LOG.error("Failed to inject data into the prepared sql statement", ex);
 			}
 		}
 	}

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.bluemoondev.simplesql.SQLTable;
 import org.bluemoondev.simplesql.SimpleSQL;
 import org.bluemoondev.simplesql.exceptions.SSQLException;
@@ -32,6 +33,8 @@ import org.bluemoondev.simplesql.exceptions.SSQLException;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class TableManager {
+
+	private static final Log LOG = Log.get("SimpleSQL", TableManager.class);
 
 	private static final Map<String, SQLTable> TABLES = new HashMap<>();
 
@@ -54,7 +57,7 @@ public class TableManager {
 			try {
 				e.getValue().create();
 			} catch (SQLException | SSQLException ex) {
-				SimpleSQL.getLogger().error("Failed to create SQL table: " + e.getValue().getName(), ex);
+				LOG.error("Failed to create SQL table: " + e.getValue().getName(), ex);
 			}
 		});
 	}

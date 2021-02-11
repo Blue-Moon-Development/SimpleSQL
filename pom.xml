@@ -60,18 +60,18 @@
 					</archive>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-source-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>attach-sources</id>-->
+<!--						<goals>-->
+<!--							<goal>jar</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
 			<!-- 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -105,9 +105,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.bluemoondev.blutilities</groupId>
+			<groupId>org.bluemoondev</groupId>
 			<artifactId>blutilities4j</artifactId>
-			<version>0.0.0.3</version>
+			<version>0.0.0.27</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>

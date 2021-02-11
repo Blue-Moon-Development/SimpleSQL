@@ -13,6 +13,8 @@
  */
 package org.bluemoondev.simplesql;
 
+import org.bluemoondev.blutilities.debug.Log;
+
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -28,6 +30,8 @@ import java.sql.SQLException;
  * @author <a href = "https://bluemoondev.org"> Matt</a>
  */
 public class MySql extends Database {
+
+	private static final Log LOG = Log.get("SimpleSQL", MySql.class);
 
 	/** Static reference to the EST server timezone code */
 	public static final String	EST	= "EST5EDT";
@@ -80,7 +84,7 @@ public class MySql extends Database {
 	public void reactivateConnection() throws SQLException {
 		String dsn = "jdbc:mysql://"	+ host + ":" + port + "/" + name
 						+ "?serverTimezone=" + timezone;
-		SimpleSQL.getLogger().info("Connecting to MySQL database " + name);
+		LOG.info("Connecting to MySQL database " + name);
 		setConnection(DriverManager.getConnection(dsn, user, password));
 	}
 

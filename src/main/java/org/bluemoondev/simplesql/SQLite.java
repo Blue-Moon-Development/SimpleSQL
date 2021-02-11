@@ -13,6 +13,8 @@
  */
 package org.bluemoondev.simplesql;
 
+import org.bluemoondev.blutilities.debug.Log;
+
 import java.io.File;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -29,6 +31,8 @@ import java.sql.SQLException;
  */
 public class SQLite extends Database {
 
+	private static final Log LOG = Log.get("SimpleSQL", SQLite.class);
+
 	private final File file;
 
 	/**
@@ -44,7 +48,7 @@ public class SQLite extends Database {
 
 	@Override
 	public void reactivateConnection() throws SQLException {
-		SimpleSQL.getLogger().info("Connecting to local database file " + file.getAbsolutePath());
+		LOG.info("Connecting to local database file " + file.getAbsolutePath());
 		setConnection(DriverManager.getConnection("jdbc:sqlite://" + file.getAbsolutePath()));
 	}
 

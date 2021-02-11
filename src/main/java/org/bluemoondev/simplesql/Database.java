@@ -13,6 +13,8 @@
  */
 package org.bluemoondev.simplesql;
 
+import org.bluemoondev.blutilities.debug.Log;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,6 +35,8 @@ import java.util.logging.Level;
  */
 public abstract class Database {
 
+	private static final Log LOG = Log.get("SimpleSQL", Database.class);
+
 	private Connection	conn;
 	protected String	name;
 
@@ -46,7 +50,7 @@ public abstract class Database {
 			Class<?> driverClass = Class.forName(driver);
 			driverClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
-			SimpleSQL.getLogger().error(ex.getMessage(), ex);
+			LOG.error(ex.getMessage(), ex);
 		}
 	}
 

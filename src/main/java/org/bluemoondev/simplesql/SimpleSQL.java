@@ -14,6 +14,7 @@
 package org.bluemoondev.simplesql;
 
 
+import org.bluemoondev.blutilities.debug.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ import org.bluemoondev.simplesql.utils.TableManager;
  */
 public class SimpleSQL {
 
-	private static Logger logger = LoggerFactory.getLogger("SimpleSQL");
+	private static final Log LOG = Log.get("SimpleSQL", SimpleSQL.class);
 
 	private static Database database;
 
@@ -43,7 +44,7 @@ public class SimpleSQL {
 	 * @see MySql
 	 */
 	public static void init(Database db) {
-		SimpleSQL.getLogger().info("Initializing SimpleSQL");
+		LOG.info("Initializing SimpleSQL");
 		database = db;
 		TableManager.createTables();
 	}
@@ -58,19 +59,5 @@ public class SimpleSQL {
 		if (database == null) throw new SSQLException("Database has not been created. Please call SimpleSQL.init(...)");
 		return database;
 	}
-
-	/**
-	 * If for whatever reason a custom logger needs to be set, use this
-	 *
-	 * @param customLogger Your custom logger
-	 */
-	public static void setLogger(Logger customLogger) { logger = customLogger; }
-
-	/**
-	 * Retrieves the logger SimpleSQL uses
-	 *
-	 * @return the logger
-	 */
-	public static Logger getLogger() { return logger; }
 
 }
